@@ -85,10 +85,10 @@ document.addEventListener('DOMContentLoaded', function() {
             bubbleContainer.appendChild(bubble);
             setTimeout(() => { if (bubble.parentNode === bubbleContainer) { bubbleContainer.removeChild(bubble); } }, (duration + delay + 1.5) * 1000);
         }
-        const bubbleInterval = setInterval(createBubble, 200); // More frequent
+        const bubbleInterval = setInterval(createBubble, 200); // Frequent bubbles
     }
 
-    // --- Chatbot Logic ---
+     // --- Chatbot Logic ---
     const chatToggleButton = document.getElementById('chat-toggle-button');
     const chatWindow = document.getElementById('chat-window');
     const chatCloseButton = document.getElementById('chat-close-button');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const chatSendButton = document.getElementById('chat-send-button');
 
-    const GROQ_API_KEY = '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'; // <-- !!! REPLACE THIS !!!
+    const GROQ_API_KEY = 'YOUR_GROQ_API_KEY_HERE'; // <-- !!! REPLACE THIS !!!
 
     // --- Archana Ghei Context for the Chatbot ---
     const archanaGheiContext = `
@@ -152,42 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     // --- End Archana Context ---
 
-
     function toggleChatWindow() {
         const isHidden = chatWindow.classList.toggle('hidden');
         chatToggleButton.classList.toggle('open', !isHidden);
-        if (!isHidden) {
-            chatInput.focus(); // Focus input when opened
-        }
+        if (!isHidden) { chatInput.focus(); }
     }
 
     function addMessage(text, sender) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', `${sender}-message`);
-
-        // Basic sanitization (replace potential HTML tags) - Needs improvement for production
         const sanitizedText = text.replace(/</g, "<").replace(/>/g, ">");
-
-         // Simple Markdown-like formatting for lists/bold
-         let formattedText = sanitizedText
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold **text**
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')     // Italic *text*
-            .replace(/(\n\s*-\s+)/g, '<br>- ') // Basic list item start
-            .replace(/(\n\s*\*\s+)/g, '<br>* ') // Basic list item start
-            .replace(/\n/g, '<br>'); // Newlines
-
-        messageDiv.innerHTML = formattedText; // Use innerHTML after basic formatting
-
+        let formattedText = sanitizedText
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/(\n\s*-\s+)/g, '<br>• ') // Use bullet point
+            .replace(/(\n\s*\*\s+)/g, '<br>• ')
+            .replace(/\n/g, '<br>');
+        messageDiv.innerHTML = formattedText;
         chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function showTypingIndicator(show = true) {
+     function showTypingIndicator(show = true) {
         let typingIndicator = chatMessages.querySelector('.typing');
         if (show && !typingIndicator) {
             typingIndicator = document.createElement('div');
             typingIndicator.classList.add('message', 'bot-message', 'typing');
-            typingIndicator.textContent = 'Typing...';
+            // Simple animated dots
+            typingIndicator.innerHTML = 'Typing<span>.</span><span>.</span><span>.</span>';
+             // Add CSS for animation if needed, or keep simple text
             chatMessages.appendChild(typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         } else if (!show && typingIndicator) {
@@ -198,17 +191,16 @@ document.addEventListener('DOMContentLoaded', function() {
     async function sendMessageToGroq(message) {
         if (!GROQ_API_KEY || GROQ_API_KEY === 'YOUR_GROQ_API_KEY_HERE') {
             addMessage("Chatbot Error: API Key not configured.", 'bot');
-            console.error("Groq API Key is missing!");
-            return;
+            console.error("Groq API Key is missing!"); return;
         }
-        if (!message.trim()) return; // Don't send empty messages
+        if (!message.trim()) return;
 
         addMessage(message, 'user');
-        chatInput.value = ''; // Clear input
-        chatSendButton.disabled = true; // Disable send button
+        chatInput.value = '';
+        chatSendButton.disabled = true;
         showTypingIndicator(true);
 
-        const systemPrompt = `You are a helpful AI assistant providing information ONLY based on the following context about Archana Ghei. Do not make up information beyond this context. Be concise and answer questions about her experience, skills, education, projects, and professional activities. If the question is outside this context, politely state that you only have information about Archana Ghei's professional profile presented here.
+        const systemPrompt = `You are a helpful AI assistant providing information ONLY based on the following context about Archana Ghei. Be concise and answer questions about her experience, skills, education, projects, and professional activities using the provided details. Format lists clearly using bullet points (e.g., using '-' or '*'). If the question is outside this context, politely state that you only have information about Archana Ghei's professional profile presented here.
 
         Context:
         ${archanaGheiContext}`;
@@ -216,44 +208,28 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${GROQ_API_KEY}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama3-8b-8192",
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: message }
-                    ],
-                    temperature: 0.6, // Slightly creative but mostly factual
-                    max_tokens: 300, // Limit response length
+                    messages: [ { role: "system", content: systemPrompt }, { role: "user", content: message } ],
+                    temperature: 0.5, // More factual
+                    max_tokens: 350, // Slightly longer responses allowed
                 })
             });
-
             showTypingIndicator(false);
-
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Groq API Error:", errorData);
+                const errorData = await response.json(); console.error("Groq API Error:", errorData);
                 addMessage(`Chatbot Error: ${errorData.error?.message || 'Failed to get response'}`, 'bot');
             } else {
-                const data = await response.json();
-                const botReply = data.choices?.[0]?.message?.content;
-                if (botReply) {
-                    addMessage(botReply.trim(), 'bot');
-                } else {
-                    addMessage("Sorry, I couldn't generate a response.", 'bot');
-                    console.error("Invalid response structure from Groq:", data);
-                }
+                const data = await response.json(); const botReply = data.choices?.[0]?.message?.content;
+                if (botReply) { addMessage(botReply.trim(), 'bot'); }
+                else { addMessage("Sorry, I couldn't generate a response.", 'bot'); console.error("Invalid response structure from Groq:", data); }
             }
         } catch (error) {
-            showTypingIndicator(false);
-            console.error("Error fetching Groq API:", error);
+            showTypingIndicator(false); console.error("Error fetching Groq API:", error);
             addMessage("Chatbot Error: Could not connect to the AI service.", 'bot');
         } finally {
-             chatSendButton.disabled = false; // Re-enable send button
-             chatInput.focus(); // Keep focus on input
+             chatSendButton.disabled = false; chatInput.focus();
         }
     }
 
@@ -261,32 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
     chatToggleButton.addEventListener('click', toggleChatWindow);
     chatCloseButton.addEventListener('click', toggleChatWindow);
     chatSendButton.addEventListener('click', () => sendMessageToGroq(chatInput.value));
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for newline (though input is single line)
-            e.preventDefault(); // Prevent default newline behavior
-            sendMessageToGroq(chatInput.value);
-        }
-    });
+    chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessageToGroq(chatInput.value); } });
 
-    // --- Event Listeners for Scroll & Resize ---
-    updateProgressBar(); // Initial state
-    setActiveLink();     // Initial state
-
+    // Scroll/Resize Listeners
+    updateProgressBar(); setActiveLink();
     let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-                updateProgressBar();
-                setActiveLink();
-                scrollTimeout = null;
-            }, 50);
-        }
-    }, { passive: true });
-
-    window.addEventListener('resize', () => {
-        calculateOffsets();
-        updateProgressBar();
-        setActiveLink();
-    });
+    window.addEventListener('scroll', () => { if (!scrollTimeout) { scrollTimeout = setTimeout(() => { updateProgressBar(); setActiveLink(); scrollTimeout = null; }, 50); } }, { passive: true });
+    window.addEventListener('resize', () => { calculateOffsets(); updateProgressBar(); setActiveLink(); });
 
 }); // End DOMContentLoaded
