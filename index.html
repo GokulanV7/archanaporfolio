@@ -15,10 +15,19 @@
     <div id="progress-container"><div id="progress-bar"></div></div>
     <div id="preloader"><div class="spinner"></div></div>
 
-    <nav>
+    <!-- Navigation with Mobile Toggle Elements -->
+    <nav id="main-nav">
         <div class="container">
             <div class="logo">AG</div>
-            <ul>
+
+            <!-- Hamburger Toggle Button (Initially hidden on desktop) -->
+            <button id="mobile-nav-toggle" aria-label="Toggle Navigation" aria-expanded="false">
+                <i class="fas fa-bars open-icon"></i>
+                <i class="fas fa-times close-icon"></i>
+            </button>
+
+            <!-- Main Navigation Links -->
+            <ul id="main-nav-links">
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#initiatives">Initiatives</a></li>
@@ -31,10 +40,11 @@
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section id="hero">
         <div id="bubble-container"></div>
         <div class="container hero-content">
-            <img src="archana_headshot.jpg" alt="Archana Ghei - Senior HR Specialist" class="profile-pic animate-fade-in">
+            <img src="hrarchana.jpg" alt="Archana Ghei - Senior HR Specialist" class="profile-pic animate-fade-in">
             <h1 class="animate-fade-in">Archana Ghei</h1>
             <p class="subtitle animate-fade-in">
                 🚀 Senior HR Specialist @ Trilogy Innovations | 🤖 AI Enthusiast | 💼 Hiring the Future
@@ -44,6 +54,7 @@
         </div>
     </section>
 
+    <!-- About Section -->
     <section id="about">
         <div class="container">
             <h2>From Circuits to Culture: My HR Philosophy</h2>
@@ -55,6 +66,7 @@
         </div>
     </section>
 
+    <!-- Initiatives Section -->
     <section id="initiatives" class="bg-light-pink">
         <div class="container">
             <h2>Key Initiatives & HR Tech Projects</h2>
@@ -70,6 +82,7 @@
         </div>
     </section>
 
+    <!-- Skills Section -->
     <section id="skills">
         <div class="container">
             <h2>Core Competencies & Skills</h2>
@@ -100,86 +113,48 @@
         </div>
     </section>
 
+    <!-- Experience Section -->
     <section id="experience">
         <div class="container">
             <h2>Professional Experience</h2>
             <div class="timeline">
-                <!-- Trilogy Innovations -->
                 <div class="timeline-item animate-on-scroll">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <img src="placeholder_trilogy_logo.png" alt="Trilogy Innovations Logo" class="company-logo">
-                        <h3>Senior HR Specialist</h3>
-                        <span class="timeline-company">Trilogy Innovations | Bengaluru, KA</span>
-                        <span class="timeline-date">Jul 2024 - Present (Joined Feb 2022)</span>
-                        <ul><li>Lead key HR initiatives: Strategic Workforce Planning, Data-Driven HR Analytics, Training & Performance Mgt., Leadership Development, Employee Relations & Crisis Mgt., Process Standardization (Run Books).</li></ul>
-                        <div class="hr-tech-projects"> <strong>HR Tech & Automation Projects:</strong> <ul> <li>Automated Attendance System (Google Calendar Integration).</li> <li>AI-Powered Resume Shortlisting (ChatGPT-based, 60% accuracy).</li> <li>Predictive Hiring Analytics Model.</li> <li>Onboarding Process Automation (Reduced time 7 days to 3 hrs).</li> </ul> </div>
-                    </div>
+                    <div class="timeline-dot"></div><div class="timeline-content"><img src="placeholder_trilogy_logo.png" alt="Trilogy Logo" class="company-logo"><h3>Senior HR Specialist</h3><span class="timeline-company">Trilogy Innovations | Bengaluru</span><span class="timeline-date">Jul 2024 - Present</span><ul><li>Lead key HR initiatives: Strategic Workforce Planning, Data-Driven HR Analytics, Training & Performance Mgt., Leadership Development, Employee Relations & Crisis Mgt., Process Standardization (Run Books).</li></ul><div class="hr-tech-projects"><strong>HR Tech Projects:</strong><ul><li>Automated Attendance (GCal).</li><li>AI Resume Shortlisting (ChatGPT).</li><li>Predictive Hiring Analytics.</li><li>Onboarding Automation (7d->3h).</li></ul></div></div>
                 </div>
                  <div class="timeline-item animate-on-scroll">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3>Human Resources Specialist</h3>
-                        <span class="timeline-company">Trilogy Innovations | Bengaluru, KA</span>
-                        <span class="timeline-date">Feb 2022 - Jun 2024 (2 yrs 5 mos)</span>
-                        <ul><li>Led end-to-end campus recruitment (500+ universities), significantly increasing full-time hires.</li> <li>Boosted CodeAgon hackathon participation by 50% (1L to 1.5L).</li> <li>Redesigned Dubai onboarding bootcamp (42.51% cost-saving).</li> <li>Managed Annual Employee Awards planning & execution.</li> <li>Utilized Atlassian, Salesforce, Crossover; Coordinated with Scaler, Codeginal, Zamstars.</li> <li>Primary contact for employee grievances; drove engagement initiatives.</li></ul>
-                         <div class="hr-tech-projects"> <strong>HR Tech & Automation Projects:</strong> <ul> <li>AI-Driven Video Creation for events/awards.</li> <li>Project Staffing Documentation Automation.</li> <li>Custom ATS development on Google Sheets (Reduced time-to-hire 30-40%).</li> </ul> </div>
-                    </div>
-                </div>
-                 <!-- Turito -->
-                <div class="timeline-item animate-on-scroll">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <img src="placeholder_turito_logo.png" alt="Turito Logo" class="company-logo">
-                        <h3>Training and Development</h3>
-                        <span class="timeline-company">Turito | Hyderabad, TS</span>
-                        <span class="timeline-date">Apr 2021 - Jan 2022 (10 mos)</span>
-                        <ul> <li>Led L&D initiatives, managed induction/orientation, trainer onboarding.</li> <li>Hired & managed trainers, supervised interns, provided regular feedback.</li> <li>Ensured training program effectiveness & alignment. Promoted in January.</li> </ul>
-                    </div>
-                </div>
-                 <!-- WhiteHat Jr -->
+                    <div class="timeline-dot"></div><div class="timeline-content"><h3>Human Resources Specialist</h3><span class="timeline-company">Trilogy Innovations | Bengaluru</span><span class="timeline-date">Feb 2022 - Jun 2024</span><ul><li>Led campus recruitment (500+ unis).</li> <li>Increased CodeAgon participation 50%.</li> <li>Redesigned Dubai bootcamp (42% cost save).</li> <li>Managed Employee Awards.</li> <li>Used Atlassian, Salesforce, Crossover.</li></ul><div class="hr-tech-projects"><strong>HR Tech Projects:</strong><ul><li>AI Video Creation.</li><li>Staffing Doc Automation.</li><li>Custom ATS (Google Sheets).</li></ul></div></div>
+                 </div>
                  <div class="timeline-item animate-on-scroll">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                         <img src="placeholder_whitehatjr_logo.png" alt="WhiteHat Jr Logo" class="company-logo">
-                        <h3>Talent Acquisition Specialist</h3>
-                        <span class="timeline-company">WhiteHat Jr | Mumbai</span>
-                        <span class="timeline-date">Aug 2020 - Mar 2021 (8 mos)</span>
-                         <p>Focused on sourcing and screening candidates for educational roles, contributing to rapid scaling efforts.</p>
-                    </div>
-                </div>
-                 <!-- Reliance -->
+                    <div class="timeline-dot"></div><div class="timeline-content"><img src="placeholder_turito_logo.png" alt="Turito Logo" class="company-logo"><h3>Training and Development</h3><span class="timeline-company">Turito | Hyderabad</span><span class="timeline-date">Apr 2021 - Jan 2022</span><ul><li>Led L&D, induction, trainer onboarding/mgmt, feedback cycles. Promoted.</li></ul></div>
+                 </div>
                  <div class="timeline-item animate-on-scroll">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                         <img src="placeholder_reliance_logo.png" alt="Reliance Industries Logo" class="company-logo">
-                        <h3>Human Resources Intern</h3>
-                        <span class="timeline-company">Reliance Industries Limited | Pune, MH</span>
-                        <span class="timeline-date">Apr 2020 - Jul 2020 (4 mos)</span>
-                        <ul> <li>Researched & benchmarked High-Performance Learning Academies.</li> <li>Analyzed GRCA Training effectiveness via quantitative data.</li> <li>Engaged stakeholders & researched best practices (ATD, Brandon Hall).</li> </ul>
-                    </div>
-                </div>
-                 <!-- Other Roles -->
-                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>Marketing Executive (Part-time)</h3> <span class="timeline-company">ExCoLearn Pvt. Ltd.</span> <span class="timeline-date">Jul 2019 - Mar 2020</span> </div> </div>
-                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>Internship Trainee</h3> <span class="timeline-company">Hindustan Aeronautics Limited</span> <span class="timeline-date">Jun 2018 - Jul 2018</span> </div> </div>
-                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>ESOL Instructor (Freelance)</h3> <span class="timeline-company">Superprof</span> <span class="timeline-date">Jan 2017 - May 2018</span> </div> </div>
+                     <div class="timeline-dot"></div><div class="timeline-content"><img src="placeholder_whitehatjr_logo.png" alt="WhiteHat Jr Logo" class="company-logo"><h3>Talent Acquisition Specialist</h3><span class="timeline-company">WhiteHat Jr | Mumbai</span><span class="timeline-date">Aug 2020 - Mar 2021</span><p>Sourced & screened candidates for ed roles during rapid scaling.</p></div>
+                 </div>
+                 <div class="timeline-item animate-on-scroll">
+                     <div class="timeline-dot"></div><div class="timeline-content"><img src="placeholder_reliance_logo.png" alt="Reliance Logo" class="company-logo"><h3>Human Resources Intern</h3><span class="timeline-company">Reliance Industries | Pune</span><span class="timeline-date">Apr 2020 - Jul 2020</span><ul><li>Researched learning academies, analyzed training data, engaged stakeholders.</li></ul></div>
+                 </div>
+                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>Marketing Exec (PT)</h3> <span class="timeline-company">ExCoLearn</span> <span class="timeline-date">2019-2020</span> </div> </div>
+                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>Intern</h3> <span class="timeline-company">HAL</span> <span class="timeline-date">2018</span> </div> </div>
+                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>ESOL Instructor (Freelance)</h3> <span class="timeline-company">Superprof</span> <span class="timeline-date">2017-2018</span> </div> </div>
             </div>
         </div>
     </section>
 
+    <!-- Education Section -->
     <section id="education" class="bg-light-pink">
         <div class="container">
             <h2>Education & Credentials</h2>
             <div class="timeline education-timeline">
                  <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <img src="placeholder_cardiff_logo.png" alt="Cardiff Logo" class="company-logo"> <h3>MBA - HR</h3> <span class="timeline-company">Cardiff Metropolitan University</span> <span class="timeline-date">2019 - 2020</span> </div> </div>
                  <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <img src="placeholder_ubs_logo.png" alt="UBS Logo" class="company-logo"> <h3>PGDM - HR</h3> <span class="timeline-company">Universal Business School</span> <span class="timeline-date">2019 - 2020</span> </div> </div>
-                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <img src="placeholder_mgm_logo.png" alt="MGM Logo" class="company-logo"> <h3>B.Eng - Electronics & Telecomm.</h3> <span class="timeline-company">MGM's College of Engineering, Nanded</span> <span class="timeline-date">2015 - 2019</span> </div> </div>
+                 <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <img src="placeholder_mgm_logo.png" alt="MGM Logo" class="company-logo"> <h3>B.Eng - E&TC</h3> <span class="timeline-company">MGM's College of Engineering, Nanded</span> <span class="timeline-date">2015 - 2019</span> </div> </div>
                  <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>HSC</h3> <span class="timeline-company">Pratibha Niketan College, Nanded</span> <span class="timeline-date">2013 - 2015</span> </div> </div>
                  <div class="timeline-item animate-on-scroll"> <div class="timeline-dot"></div> <div class="timeline-content"> <h3>SSC</h3> <span class="timeline-company">Nagarjuna Public School</span> <span class="timeline-date">2013</span> </div> </div>
             </div>
         </div>
     </section>
 
+    <!-- Community Engagement Section -->
     <section id="community">
         <div class="container">
             <h2>Community Engagement & Thought Leadership</h2>
@@ -193,6 +168,7 @@
         </div>
     </section>
 
+    <!-- Contact Section -->
     <section id="contact" class="bg-light-pink">
         <div class="container">
             <h2>Connect with Archana</h2>
@@ -206,6 +182,7 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
             <p>Archana Ghei | Senior HR Specialist | Trilogy Innovations</p>

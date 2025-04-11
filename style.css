@@ -17,6 +17,7 @@
     --enhanced-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     --border-radius: 10px;
     --chatbot-height: min(70vh, 550px);
+    --nav-height: 70px; /* Approximate nav height */
 }
 
 /* --- Reset & Base --- */
@@ -57,14 +58,21 @@ section { padding: 90px 0; overflow: hidden; }
 .btn-subtle:hover { background-color: var(--medium-pink); color: var(--white); border-color: var(--medium-pink); box-shadow: 0 4px 15px rgba(244, 172, 183, 0.3); }
 
 /* --- Navigation --- */
-nav { background-color: rgba(255, 255, 255, 0.97); backdrop-filter: blur(8px); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07); position: sticky; top: 0; z-index: 1000; padding: 16px 0; width: 100%; }
-nav .container { display: flex; justify-content: space-between; align-items: center; }
-nav .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-pink); }
-nav ul { display: flex; }
-nav ul li { margin-left: 35px; }
-nav ul li a { color: var(--text-color); font-weight: 500; padding-bottom: 6px; border-bottom: 3px solid transparent; transition: border-color 0.3s ease, color 0.3s ease, transform 0.2s ease; display: inline-block; }
-nav ul li a:hover { color: var(--primary-pink); transform: translateY(-2px); }
-nav ul li a.active { color: var(--primary-pink); border-bottom-color: var(--primary-pink); }
+#main-nav { background-color: rgba(255, 255, 255, 0.97); backdrop-filter: blur(8px); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07); position: sticky; top: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
+#main-nav .container { display: flex; justify-content: space-between; align-items: center; height: 100%; }
+#main-nav .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-pink); }
+#main-nav-links { display: flex; align-items: center; height: 100%; margin: 0; padding: 0; }
+#main-nav-links li { margin-left: 35px; }
+#main-nav-links li a { color: var(--text-color); font-weight: 500; padding-bottom: 6px; border-bottom: 3px solid transparent; transition: border-color 0.3s ease, color 0.3s ease, transform 0.2s ease; display: inline-block; }
+#main-nav-links li a:hover { color: var(--primary-pink); transform: translateY(-2px); }
+#main-nav-links li a.active { color: var(--primary-pink); border-bottom-color: var(--primary-pink); }
+
+/* Mobile Nav Toggle Button */
+#mobile-nav-toggle { display: none; background: none; border: none; font-size: 1.8rem; color: var(--primary-pink); cursor: pointer; padding: 10px; z-index: 1010; position: relative; width: 40px; height: 40px; }
+#mobile-nav-toggle i { transition: transform 0.3s ease, opacity 0.3s ease; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+#mobile-nav-toggle .close-icon { opacity: 0; transform: translate(-50%, -50%) rotate(-90deg) scale(0.7); }
+#main-nav.mobile-nav-active #mobile-nav-toggle .open-icon { opacity: 0; transform: translate(-50%, -50%) rotate(90deg) scale(0.7); }
+#main-nav.mobile-nav-active #mobile-nav-toggle .close-icon { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
 
 /* --- Hero Section --- */
 #hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; background: linear-gradient(rgba(253, 235, 242, 0.92), rgba(244, 172, 183, 0.88)), url('placeholder_banner.jpg') center center/cover no-repeat fixed; color: var(--heading-color); position: relative; overflow: hidden; padding: 100px 20px 80px 20px; margin-top: 6px; }
@@ -138,7 +146,7 @@ nav ul li a.active { color: var(--primary-pink); border-bottom-color: var(--prim
 .community-item p { font-size: 1rem; color: var(--subtle-text-color); line-height: 1.7; }
 
 /* --- Contact Section --- */
-#contact { text-align: center; padding: 90px 0; } /* Pink background */
+#contact { text-align: center; padding: 90px 0; }
 #contact h2 { margin-bottom: 1.5rem; font-size: 2.4rem; }
 #contact p { max-width: 650px; margin: 0 auto 3rem auto; font-size: 1.15rem; color: var(--subtle-text-color); line-height: 1.8;}
 .contact-links { margin-bottom: 2rem; }
@@ -169,26 +177,32 @@ footer p:first-child { font-weight: 500; color: var(--white); }
 #chat-close-button { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0 5px; opacity: 0.8; transition: opacity 0.3s ease; }
 #chat-close-button:hover { opacity: 1; }
 #chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; background-color: var(--neutral-grey); display: flex; flex-direction: column; gap: 12px; }
-.message { padding: 10px 15px; border-radius: 15px; max-width: 80%; word-wrap: break-word; line-height: 1.5; font-size: 0.95rem; /* Slightly smaller chat text */ }
+.message { padding: 10px 15px; border-radius: 15px; max-width: 80%; word-wrap: break-word; line-height: 1.5; font-size: 0.95rem; }
 .user-message { background-color: var(--primary-pink); color: var(--white); align-self: flex-end; border-bottom-right-radius: 5px; }
 .bot-message { background-color: var(--white); color: var(--text-color); border: 1px solid var(--light-grey); align-self: flex-start; border-bottom-left-radius: 5px; }
+.bot-message.typing span { display: inline-block; animation: typing-dot 1.2s infinite ease-in-out; opacity: 0.5; margin: 0 1px;}
+.bot-message.typing span:nth-child(1) { animation-delay: 0s; }
+.bot-message.typing span:nth-child(2) { animation-delay: 0.2s; }
+.bot-message.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1;} }
 .bot-message.typing { font-style: italic; color: var(--subtle-text-color); background-color: transparent; border: none; padding: 5px 0; }
-#chat-input-area { display: flex; padding: 12px; border-top: 1px solid var(--light-grey); background-color: var(--white); }
-#chat-input { flex-grow: 1; padding: 10px 15px; /* More padding */ border: 1px solid var(--light-grey); border-radius: 20px; margin-right: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s ease; }
+#chat-input-area { display: flex; padding: 12px; border-top: 1px solid var(--light-grey); background-color: var(--white); align-items: center; }
+#chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--light-grey); border-radius: 20px; margin-right: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s ease; }
 #chat-input:focus { border-color: var(--primary-pink); }
 #chat-send-button { background-color: var(--primary-pink); color: var(--white); border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; transition: background-color 0.3s ease, transform 0.2s ease; }
 #chat-send-button:hover { background-color: var(--dark-pink-accent); transform: scale(1.05); }
 #chat-send-button:disabled { background-color: var(--medium-pink); cursor: not-allowed; }
 
-/* --- Responsiveness --- */
-@media (max-width: 1200px) {
-    .container { max-width: 960px; }
-}
+
+/* ============================ */
+/* --- MOBILE RESPONSIVENESS --- */
+/* ============================ */
+
 @media (max-width: 992px) {
-    .container { max-width: 90%; padding: 0 15px; }
+    .container { max-width: 95%; padding: 0 15px; }
     h1 { font-size: 2.8rem; }
     h2 { font-size: 2.1rem; }
-    nav ul li { margin-left: 25px; }
+    #main-nav ul li { margin-left: 25px; } /* Still affects desktop view above 768px */
     .skills-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
     .initiatives-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
     .profile-pic { width: 200px; height: 200px; }
@@ -197,18 +211,39 @@ footer p:first-child { font-weight: 500; color: var(--white); }
     .timeline-dot { left: -7px; width: 20px; height: 20px;}
 }
 
+/* --- Mobile Nav Breakpoint & Styles --- */
 @media (max-width: 768px) {
-    html { font-size: 15px; /* Slightly reduce base font size */ }
+    html { font-size: 15px; }
     h1 { font-size: 2.5rem; }
     h2 { font-size: 2rem; margin-bottom: 2.5rem;}
     h2::after { width: 50px; height: 3px;}
     h3 { font-size: 1.35rem; }
-    section { padding: 70px 0; } /* Reduced section padding */
-    nav { padding: 12px 0; backdrop-filter: none; background-color: rgba(255,255,255,0.98); }
-    nav .container { flex-direction: column; }
-    nav ul { margin-top: 12px; flex-wrap: wrap; justify-content: center; }
-    nav ul li { margin: 5px 15px; }
-    #hero { padding: 80px 15px 60px 15px; /* Adjusted padding */ min-height: 90vh; background-attachment: scroll; }
+    section { padding: 70px 0; }
+
+    /* Show hamburger, hide desktop links */
+    #mobile-nav-toggle { display: block; }
+    #main-nav-links {
+        display: flex; flex-direction: column;
+        position: absolute; top: var(--nav-height); left: 0; width: 100%;
+        background-color: rgba(255, 255, 255, 0.99); /* Almost opaque */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        max-height: 0; opacity: 0; overflow: hidden; pointer-events: none;
+        transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
+        align-items: stretch; padding: 0; height: auto; margin: 0;
+    }
+    /* Style when mobile menu is active */
+    #main-nav.mobile-nav-active #main-nav-links {
+        max-height: 80vh; /* Generous height */
+        opacity: 1;
+        pointer-events: auto;
+    }
+    #main-nav-links li { margin: 0; width: 100%; text-align: center; border-bottom: 1px solid var(--light-grey); }
+    #main-nav-links li:last-child { border-bottom: none; }
+    #main-nav-links li a { padding: 18px 20px; width: 100%; display: block; border-bottom: none; font-weight: 500; transition: background-color 0.3s ease; }
+    #main-nav-links li a:hover, #main-nav-links li a.active { background-color: var(--light-pink); color: var(--primary-pink); transform: none; }
+
+    /* Other Mobile Adjustments */
+    #hero { padding: 80px 15px 60px 15px; min-height: 90vh; background-attachment: scroll; }
     .profile-pic { width: 180px; height: 180px; border-width: 6px; margin-bottom: 1.5rem; }
     #hero h1 { font-size: 2.8rem; }
     #hero .subtitle { font-size: 1.3rem; margin-bottom: 1.5rem; }
@@ -220,16 +255,16 @@ footer p:first-child { font-weight: 500; color: var(--white); }
     .timeline::before { left: 10px; width: 5px; }
     .timeline-item { padding-left: 35px; margin-bottom: 40px;}
     .timeline-dot { left: -2.5px; width: 18px; height: 18px; border-width: 4px;}
-    .timeline-content { padding: 25px 20px; /* Reduced padding */ }
+    .timeline-content { padding: 25px 20px; }
     .timeline-content h3 { font-size: 1.4rem; }
     .timeline-content ul li { font-size: 0.95rem; padding-left: 25px; }
     .contact-links .btn { display: block; margin: 15px auto; width: 85%; max-width: 320px; padding: 12px 25px; }
-    #chat-window { width: calc(100% - 40px); right: 20px; bottom: 95px; height: min(60vh, 480px); } /* Adjust chat window */
+    #chat-window { width: calc(100% - 40px); right: 20px; bottom: 95px; height: min(60vh, 480px); }
     #chat-toggle-button { width: 55px; height: 55px; font-size: 1.6rem; bottom: 25px; right: 20px; }
 }
 
 @media (max-width: 480px) {
-    html { font-size: 14.5px; /* Further reduce base font size */ }
+    html { font-size: 14.5px; }
     h1 { font-size: 2rem; }
     h2 { font-size: 1.8rem; margin-bottom: 2rem; }
     h2::after { width: 45px; height: 3px; }
@@ -239,13 +274,14 @@ footer p:first-child { font-weight: 500; color: var(--white); }
     #hero .subtitle { font-size: 1.1rem; }
     #hero .hero-cta-intro { font-size: 1rem; }
     .profile-pic { width: 160px; height: 160px; border-width: 5px; }
-    .btn { padding: 12px 22px; font-size: 1rem;} /* Ensure tap target size */
-    nav ul li { margin: 4px 10px; }
+    .btn { padding: 12px 22px; font-size: 1rem;}
+    #mobile-nav-toggle { font-size: 1.6rem; }
+    #main-nav-links li a { padding: 15px 20px; }
     .bubble { width: 10px; height: 10px; animation-duration: 18s; }
     #progress-container { height: 5px; }
     section { padding: 60px 0; }
     .initiative-card, .spotlight-card, .skill-item, .timeline-content, .community-item { padding: 25px 15px; }
-    .section-subtitle { font-size: 1rem; max-width: 95%;}
+    .section-subtitle { font-size: 1rem; }
     .about-icon { font-size: 3.5rem; }
     .skill-icon { font-size: 2.5rem; }
     .timeline-content h3 { font-size: 1.3rem; }
