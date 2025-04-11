@@ -1,11 +1,73 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Preloader ---
+    const body = document.body;
+    const introShipContainer = document.getElementById('intro-ship-container');
+    const introShip = document.getElementById('intro-ship');
+    const introZap = document.getElementById('intro-zap-effect');
+    const heroContent = document.querySelector('#hero .hero-content');
     const preloader = document.getElementById('preloader');
+
+    // --- Preloader ---
     if (preloader) {
-        window.onload = () => { preloader.classList.add('hidden'); };
-        setTimeout(() => { if (!preloader.classList.contains('hidden')) { preloader.classList.add('hidden'); } }, 3000);
+        window.addEventListener('load', () => { // Use 'load' to wait for images etc.
+            preloader.classList.add('hidden');
+            // Start intro animation *after* preloader is hidden
+            setTimeout(startIntroAnimation, 50); // Short delay after preloader fades
+        });
+        // Fallback if load event fails
+        setTimeout(() => {
+             if (!preloader.classList.contains('hidden')) {
+                 preloader.classList.add('hidden');
+                 setTimeout(startIntroAnimation, 50);
+             }
+        }, 4000); // Max wait 4 seconds
+    } else {
+        // If no preloader, start animation almost immediately
+        setTimeout(startIntroAnimation, 100);
     }
+
+    // --- Intro Animation Trigger ---
+    function startIntroAnimation() {
+        if (!introShipContainer || !introShip || !heroContent) return; // Ensure elements exist
+
+        body.classList.remove('preload'); // Allow scrolling later
+        body.classList.add('intro-animation-active'); // Reveal ship container
+
+        introShip.classList.add('ship-animate'); // Add class to trigger CSS animation
+
+        // Listen for the end of the ship's animation
+        introShip.addEventListener('animationend', handleShipAnimationEnd, { once: true });
+    }
+
+    function handleShipAnimationEnd() {
+         // Trigger zap effect shortly after ship animation ends (near the end state)
+         if (introZap) {
+             introZap.classList.add('zap-effect-active');
+             introZap.addEventListener('animationend', () => {
+                // Reveal content after zap fades
+                revealHeroContent();
+             }, { once: true });
+         } else {
+            // If no zap effect element, reveal content directly
+            revealHeroContent();
+         }
+    }
+
+    function revealHeroContent() {
+        if(heroContent) {
+            heroContent.classList.add('content-reveal'); // Trigger content reveal
+        }
+        if (introShipContainer) {
+             // Optionally hide the ship container after a delay
+             setTimeout(() => {
+                introShipContainer.style.display = 'none'; // Remove from layout
+                body.classList.remove('intro-animation-active'); // Allow scrolling etc.
+             }, 500); // Delay matches content reveal transition
+        } else {
+            body.classList.remove('intro-animation-active'); // Allow scrolling etc.
+        }
+    }
+
 
     // --- Reading Progress Bar ---
     const progressBar = document.getElementById('progress-bar');
@@ -13,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalScrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         const scrollPercentage = totalScrollHeight > 0 ? (scrolled / totalScrollHeight) * 100 : 0;
-        progressBar.style.width = `${Math.min(100, Math.max(0, scrollPercentage))}%`;
+        if(progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, scrollPercentage))}%`;
     }
 
     // --- Update Footer Year ---
@@ -21,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
 
     // --- Smooth Scrolling, Active Nav & MOBILE NAV TOGGLE ---
-    const navElement = document.getElementById('main-nav'); // Use ID for nav
-    const navLinksContainer = document.getElementById('main-nav-links'); // Get the UL container
-    const navLinks = navLinksContainer.querySelectorAll('a[href^="#"]'); // Target links within the UL
+    const navElement = document.getElementById('main-nav');
+    const navLinksContainer = document.getElementById('main-nav-links');
+    const navLinks = navLinksContainer?.querySelectorAll('a[href^="#"]') || []; // Handle null container
     const mobileNavToggle = document.getElementById('mobile-nav-toggle');
 
     const progressBarHeight = document.getElementById('progress-container')?.offsetHeight || 0;
@@ -33,76 +95,55 @@ document.addEventListener('DOMContentLoaded', function() {
     function calculateOffsets() {
         const navHeight = (navElement ? navElement.offsetHeight : 0);
         scrollOffset = navHeight + progressBarHeight;
-        activeLinkOffset = scrollOffset + 25; // Add buffer for active link detection
+        activeLinkOffset = scrollOffset + 25;
     }
-    calculateOffsets(); // Initial calculation
+    calculateOffsets();
 
     // Mobile Nav Toggle Listener
-    if (mobileNavToggle && navElement) { // Check if elements exist
+    if (mobileNavToggle && navElement) {
         mobileNavToggle.addEventListener('click', () => {
             const isExpanded = mobileNavToggle.getAttribute('aria-expanded') === 'true';
             mobileNavToggle.setAttribute('aria-expanded', !isExpanded);
-            navElement.classList.toggle('mobile-nav-active'); // Toggle class on NAV element
+            navElement.classList.toggle('mobile-nav-active');
         });
     }
 
-    // Close mobile menu when a link inside it is clicked & Smooth Scroll
+    // Close mobile menu & Smooth Scroll
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-
-            // Close mobile menu if active
             if (navElement && navElement.classList.contains('mobile-nav-active')) {
                 navElement.classList.remove('mobile-nav-active');
-                if (mobileNavToggle) {
-                    mobileNavToggle.setAttribute('aria-expanded', 'false');
-                }
+                if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
             }
-
-            // Smooth Scroll Logic
             const targetId = this.getAttribute('href');
-            try { // Add try-catch for robustness
+            try {
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - scrollOffset;
                     window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                } else {
-                    console.warn(`Target element not found for selector: ${targetId}`);
-                }
-            } catch (error) {
-                console.error(`Error finding or scrolling to element ${targetId}:`, error);
-            }
+                } else { console.warn(`Target element not found: ${targetId}`); }
+            } catch (error) { console.error(`Error scrolling to ${targetId}:`, error); }
         });
     });
 
-    // Active Link Highlighting Logic
+    // Active Link Highlighting
     const sections = document.querySelectorAll('section[id]');
     function setActiveLink() {
         let currentSectionId = null;
         const currentScroll = window.pageYOffset;
-
         sections.forEach(section => {
             const sectionTop = section.offsetTop - activeLinkOffset;
             const sectionBottom = sectionTop + section.offsetHeight;
-             if (currentScroll >= sectionTop && currentScroll < sectionBottom) {
-                 currentSectionId = section.getAttribute('id');
-             }
+            if (currentScroll >= sectionTop && currentScroll < sectionBottom) { currentSectionId = section.getAttribute('id'); }
         });
+        const bottomThreshold = document.documentElement.scrollHeight - window.innerHeight - 50;
+        if (currentScroll >= bottomThreshold && sections.length > 0) { currentSectionId = sections[sections.length - 1].getAttribute('id'); }
+        if (currentSectionId === null && currentScroll < (sections[0]?.offsetTop - activeLinkOffset) && sections.length > 0) { currentSectionId = sections[0].getAttribute('id'); }
 
-         const bottomThreshold = document.documentElement.scrollHeight - window.innerHeight - 50;
-         if (currentScroll >= bottomThreshold && sections.length > 0) {
-             currentSectionId = sections[sections.length - 1].getAttribute('id');
-         }
-         if (currentSectionId === null && currentScroll < (sections[0]?.offsetTop - activeLinkOffset) && sections.length > 0) {
-             currentSectionId = sections[0].getAttribute('id');
-         }
-
-        // Update active class only on the links within the main nav list
         navLinks.forEach(link => {
             link.classList.remove('active');
-            if (link.getAttribute('href') === `#${currentSectionId}`) {
-                link.classList.add('active');
-            }
+            if (link.getAttribute('href') === `#${currentSectionId}`) { link.classList.add('active'); }
         });
     }
 
@@ -141,18 +182,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const chatSendButton = document.getElementById('chat-send-button');
 
-    const GROQ_API_KEY = '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'; // <-- !!! REPLACE THIS !!!
+    const GROQ_API_KEY = 'YOUR_GROQ_API_KEY_HERE'; // <-- !!! REPLACE THIS !!!
 
-    // Context for Archana Ghei (Keep the full context string here)
-    const archanaGheiContext = ` Archana Ghei is a Senior HR Specialist at Trilogy Innovations, based in Bengaluru, Karnataka, India. She joined Trilogy Innovations in February 2022 and was promoted to Senior HR Specialist in July 2024 (total time at Trilogy: 3 yrs 3 mos+). She is an AI Enthusiast focused on hiring the future and building scalable people and processes. Her background includes a Bachelor of Engineering in Electronics and Telecommunications from MGM's College of Engineering, Nanded (2015-2019), a PGDM in HR from Universal Business School (2019-2020), and an MBA in HR from Cardiff Metropolitan University (2019-2020). **HR Philosophy & Mantra:** Engineer-turned-HR professional focused on scaling potential in people, processes, and performance. Mantra: "Move fast, stay human, and build what lasts." **Key Responsibilities & Initiatives at Trilogy Innovations (Senior HR Specialist Role):** *   Strategic Workforce Planning: Partnering with leadership on talent gaps, succession plans, aligning HR strategies. *   Data-Driven HR Analytics: Analyzing performance trends, attrition risks, engagement levels for decision-making. *   Training & Performance Management: Designing/conducting training (interns & FTEs), managing appraisals, project allocations. *   Leadership Development: Facilitating performance management training for leadership teams. *   Employee Relations & Crisis Management: Resolving complex ER issues, ensuring business continuity (e.g., during recession). *   Process Standardization: Developed Run Books for campus recruitment, internships, TI Bootcamp onboarding. **HR Tech & Automation Projects (Senior Role):** *   Automated Attendance System: Integrated with Google Calendar. *   AI-Powered Resume Shortlisting: ChatGPT-based tool (60% accuracy). *   Predictive Hiring Analytics: AI model for forecasting hiring needs. *   Onboarding Process Automation: Reduced admin time from 7 days to 3 hours. **Key Responsibilities & Initiatives at Trilogy Innovations (HR Specialist Role - Feb 2022 - Jun 2024):** *   Led end-to-end recruitment (500+ universities), increasing hires 2022-2023. *   Increased CodeAgon hackathon participation by 50% (1L to 1.5L). *   Redesigned Dubai onboarding bootcamp (42.51% cost-saving). *   Led Annual Employee Awards planning & execution. *   Managed onboarding (Atlassian), recruitment (Salesforce), global hiring (Crossover). *   Coordinated with partners: Scaler (InterviewBit), Codeginal, Zamstars. *   Primary contact for employee grievances, drove engagement activities. **HR Tech & Automation Projects (Specialist Role):** *   AI-Driven Video Creation for events/awards. *   Project Staffing Documentation Automation. *   Developed Custom ATS on Google Sheets (Reduced time-to-hire 30-40%). **Previous Experience:** *   Turito (Apr 2021 - Jan 2022): Training and Development Lead (L&D, induction, trainer onboarding/management, feedback). *   WhiteHat Jr (Aug 2020 - Mar 2021): Talent Acquisition Specialist. *   Reliance Industries Limited (Apr 2020 - Jul 2020): HR Intern (Research on Learning Academies, data analysis, stakeholder engagement). *   ExCoLearn Pvt. Ltd. (Jul 2019 - Mar 2020): Marketing Executive (Part-time). *   Hindustan Aeronautics Limited (Jun 2018 - Jul 2018): Internship Trainee. *   Superprof (Jan 2017 - May 2018): ESOL Instructor (Freelance). **Core Skills:** HR Business Partnering, Organizational Performance Management, HR Analytics, Stakeholder Management, Global Talent Acquisition, L&D Strategy, Training Needs Analysis, HR Strategy, Problem Solving, Cross-functional Collaborations, Employee Engagement, Critical Thinking, Diversity & Inclusion, Business Strategy, Strategic Planning, Attrition Analysis, Business Initiatives, Training & Development, Performance Management, Competency Analysis, Feedback Management, Onboarding Optimization. **Community Engagement & Insights:** *   Spoke at Manipal University Jaipur about AI in careers, portfolio importance, communication skills. Key message: Master AI collaboration, don't fear replacement. *   Participated in Games Gurukul at UBS (games for skill-building). *   Met EPF Commissioner Mr. R. K. Sahoo. *   Attended Think Tank session at UBS with Tarun Anand sir. **Contact:** LinkedIn (@archanaghei), Instagram (@archana_ghei). `;
+    // ** UPDATED Context for Archana Ghei (Includes Personal Details) **
+    const archanaGheiContext = `
+        Archana Ghei is a Senior HR Specialist at Trilogy Innovations in Bengaluru, India (Joined Feb 2022, promoted Jul 2024). She's an AI Enthusiast focused on scaling people and processes. She previously worked in Training & Development at Turito, Talent Acquisition at WhiteHat Jr, and interned at Reliance Industries and HAL. Her education includes an MBA-HR from Cardiff Met Uni, PGDM-HR from Universal Business School, and a B.Eng in E&TC from MGM Nanded.
 
-    // --- Chatbot Functions (toggleChatWindow, addMessage, showTypingIndicator, sendMessageToGroq) ---
-    // Keep these functions exactly as they were in the previous complete JS response.
-    // They handle opening/closing the chat, adding messages, showing 'typing...', and calling the Groq API.
-    // Make sure the sendMessageToGroq function includes the systemPrompt using the archanaGheiContext variable.
+        **HR Philosophy & Mantra:** Engineer-turned-HR professional focused on scaling potential. Mantra: "Move fast, stay human, and build what lasts."
 
-     function toggleChatWindow() {
-        if(!chatWindow || !chatToggleButton) return; // Add checks
+        **Key Responsibilities & Initiatives (Senior HR Specialist):** Strategic Workforce Planning, Data-Driven HR Analytics, Training & Perf Mgt., Leadership Development, Employee Relations, Process Standardization (Run Books).
+
+        **HR Tech & Automation Projects (Senior Role):** Automated Attendance (GCal), AI Resume Shortlisting (ChatGPT, 60% accuracy), Predictive Hiring Analytics, Onboarding Automation (7d->3h).
+
+        **Key Responsibilities & Initiatives (HR Specialist Role):** Campus recruitment (500+ unis), CodeAgon participation boost (50%), Dubai bootcamp redesign (42% cost save), Employee Awards, Onboarding (Atlassian), Recruitment (Salesforce), Global Hiring (Crossover), Partner Coordination (Scaler, Codeginal, Zamstars), Employee Grievances, Engagement activities.
+
+        **HR Tech & Automation Projects (Specialist Role):** AI Video Creation, Staffing Doc Automation, Custom ATS (Google Sheets, 30-40% faster hire).
+
+        **Core Skills:** HR Business Partnering, Org Performance Mgt, HR Analytics, Stakeholder Management, Global Talent Acquisition, L&D Strategy, Training Needs Analysis, HR Strategy, Problem Solving, Cross-functional Collab, Employee Engagement, Critical Thinking, D&I, Business Strategy, Strategic Planning, Attrition Analysis, Business Initiatives, Training & Development, Perf Mgt, Competency Analysis, Feedback Mgt, Onboarding Optimization.
+
+        **Community Engagement & Insights:** Speaker at Manipal University Jaipur (AI, portfolios, communication for engineers), Participant at Games Gurukul UBS (skills via games), Met EPF Commissioner, Attended Think Tank at UBS.
+
+        **Personal Notes:** She enjoys visiting Pune. She cares deeply for her mother and two siblings. Archana likes sharing photos and tweets reflecting her interests.
+
+        **Contact:** LinkedIn (@archanaghei), Instagram (@archana_ghei).
+    `;
+    // --- End Archana Context ---
+
+    function toggleChatWindow() {
+        if(!chatWindow || !chatToggleButton) return;
         const isHidden = chatWindow.classList.toggle('hidden');
         chatToggleButton.classList.toggle('open', !isHidden);
         if (!isHidden && chatInput) { chatInput.focus(); }
@@ -163,19 +220,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', `${sender}-message`);
         const sanitizedText = text.replace(/</g, "<").replace(/>/g, ">");
-        // Improved list formatting and bold/italic handling
         let formattedText = sanitizedText
-            .replace(/\n\s*([\*\-])\s/g, '<br>• ') // Handles both * and - list markers after newline
-            .replace(/^([\*\-])\s/g, '• ')       // Handles list marker at the beginning
+            .replace(/\n\s*([\*\-])\s/g, '<br>• ')
+            .replace(/^([\*\-])\s/g, '• ')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/\n/g, '<br>'); // Convert remaining newlines
+            .replace(/\n/g, '<br>');
         messageDiv.innerHTML = formattedText;
         chatMessages.appendChild(messageDiv);
-        // Ensure scroll happens after message is potentially rendered
-        requestAnimationFrame(() => {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
+        requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
      }
 
      function showTypingIndicator(show = true) {
@@ -186,28 +239,20 @@ document.addEventListener('DOMContentLoaded', function() {
             typingIndicator.classList.add('message', 'bot-message', 'typing');
             typingIndicator.innerHTML = 'Typing<span>.</span><span>.</span><span>.</span>';
             chatMessages.appendChild(typingIndicator);
-            requestAnimationFrame(() => { // Scroll after adding
-                 chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-        } else if (!show && typingIndicator) {
-            typingIndicator.remove();
-        }
+            requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
+        } else if (!show && typingIndicator) { typingIndicator.remove(); }
     }
 
     async function sendMessageToGroq(message) {
-        if (!GROQ_API_KEY || GROQ_API_KEY === 'YOUR_GROQ_API_KEY_HERE') {
-            addMessage("Chatbot Error: API Key not configured.", 'bot');
-            console.error("Groq API Key is missing!"); return;
-        }
-        if (!message || !message.trim()) return; // Check for message existence
-        if (!chatInput || !chatSendButton) return; // Check for UI elements
+        if (!GROQ_API_KEY || GROQ_API_KEY === 'YOUR_GROQ_API_KEY_HERE') { addMessage("Chatbot Error: API Key missing.", 'bot'); return; }
+        if (!message || !message.trim()) return;
+        if (!chatInput || !chatSendButton) return;
 
         addMessage(message, 'user');
-        chatInput.value = '';
-        chatSendButton.disabled = true;
-        showTypingIndicator(true);
+        chatInput.value = ''; chatSendButton.disabled = true; showTypingIndicator(true);
 
-        const systemPrompt = `You are a helpful AI assistant providing information ONLY based on the following context about Archana Ghei. Be concise and answer questions about her experience, skills, education, projects, and professional activities using the provided details. Format lists clearly using bullet points (e.g., using '• ' marker). If the question is outside this context, politely state that you only have information about Archana Ghei's professional profile presented here.
+        // ** UPDATED System Prompt **
+        const systemPrompt = `You are a helpful AI assistant providing information ONLY based on the following context about Archana Ghei. Be concise and answer questions about her experience, skills, education, projects, and professional activities. Format lists clearly using bullet points ('• '). You can also briefly mention the personal notes provided if specifically asked (e.g., "Does she like Pune?", "Tell me about her family?"). If the question is outside the provided professional or personal context, politely state that you only have the information from her profile.
 
         Context:
         ${archanaGheiContext}`;
@@ -219,16 +264,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     model: "llama3-8b-8192",
                     messages: [ { role: "system", content: systemPrompt }, { role: "user", content: message } ],
-                    temperature: 0.5,
+                    temperature: 0.6, // Allow slightly more conversational tone
                     max_tokens: 350,
-                    // stream: false // Ensure streaming is off if not handled
                 })
             });
-
             showTypingIndicator(false);
-
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: { message: 'Failed to parse error response' } })); // Graceful error parsing
+                const errorData = await response.json().catch(() => ({ error: { message: 'Failed to parse error response' } }));
                 console.error("Groq API Error:", response.status, errorData);
                 addMessage(`Chatbot Error: ${errorData.error?.message || `HTTP ${response.status}`}`, 'bot');
             } else {
@@ -238,8 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 else { addMessage("Sorry, I received an empty response.", 'bot'); console.error("Empty response content from Groq:", data); }
             }
         } catch (error) {
-            showTypingIndicator(false);
-            console.error("Error fetching Groq API:", error);
+            showTypingIndicator(false); console.error("Error fetching Groq API:", error);
             addMessage("Chatbot Error: Could not connect. Please check console.", 'bot');
         } finally {
              if(chatSendButton) chatSendButton.disabled = false;
@@ -250,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Chatbot Event Listeners
     if(chatToggleButton) chatToggleButton.addEventListener('click', toggleChatWindow);
     if(chatCloseButton) chatCloseButton.addEventListener('click', toggleChatWindow);
-    if(chatSendButton) chatSendButton.addEventListener('click', () => sendMessageToGroq(chatInput?.value)); // Add null check
+    if(chatSendButton) chatSendButton.addEventListener('click', () => sendMessageToGroq(chatInput?.value));
     if(chatInput) chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessageToGroq(chatInput.value); } });
 
     // --- Initial calls and Event Listeners for Scroll & Resize ---
